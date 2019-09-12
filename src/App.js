@@ -1,26 +1,28 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+import VideoMap from "./pages/VideoMap";
+
+const Home = () => (
+  <div style={{textAlign: "center", padding: "20px"}}>
+    <img src="http://www.bm-bauer.at/Stempel%20Bauer.jpg" alt="Logo von Michael Bauer"/>
+  </div>
+);
+
+const notFound = () => (
+  <div style={{textAlign: "center", padding: "20px"}}>
+    404 - not found
+  </div>
+);
+
+export default function App() {
+  return ( 
+    <Router>
+      <Switch>
+        <Route path="/fahrt/:id" component={VideoMap} exact />
+        <Route path="/" component={Home} exact />
+        <Route path="*" component={notFound} />
+      </Switch>
+    </Router>
   );
 }
-
-export default App;
