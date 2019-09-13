@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {parseGps} from "../util";
 import { Map, Marker, Circle, TileLayer } from 'react-leaflet';
 import YouTube from 'react-youtube';
@@ -6,6 +6,7 @@ import YouTube from 'react-youtube';
 let timer = null;
 
 export default function VideoMap({match}) {
+  const videoRef = useRef(null);
   const [notFound, setNotFound] = useState(false);
 
   const [meta, setMeta] = useState({});
@@ -53,6 +54,13 @@ export default function VideoMap({match}) {
         clearInterval(timer)
     }
   }
+  const jumpToTime = (position) => {
+    const newCurTime = position.time - parseInt(meta.gpsTime) + parseInt(meta.videoTime);
+    setCurrentPosition(position);
+    setCenter(position);
+    setCurrentTime(newCurTime);
+    videoRef.current.internalPlayer.seekTo(newCurTime, true)
+  }
   if(notFound) {
     return <div>404</div>
   }
@@ -60,6 +68,7 @@ export default function VideoMap({match}) {
     <div style={{display: "grid", height: "100%", gridTemplateColumns: "1fr 1fr"}}>
       <div>
         <YouTube
+          ref={videoRef}
           videoId={match.params.id}  
           className="fullwidth"
           opts={{
@@ -85,7 +94,7 @@ export default function VideoMap({match}) {
           />
           {currentPosition && <Marker position={{lat: currentPosition.lat, lon: currentPosition.lon}} />}
           {coordinates && coordinates.map(c => (
-            <Circle key={c.time} center={{lat: c.lat, lon: c.lon}} radius={1} />
+            <Circle key={c.time} center={{lat: c.lat, lon: c.lon}} radius={1} onClick={e => jumpToTime(c)} />
           ))}
         </Map>
       </div>
